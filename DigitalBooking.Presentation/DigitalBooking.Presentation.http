@@ -1,0 +1,6 @@
+@DigitalBooking.Presentation_HostAddress = http://localhost:5223
+
+GET {{DigitalBooking.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
