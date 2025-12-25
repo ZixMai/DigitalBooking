@@ -3,6 +3,7 @@ using System;
 using DigitalBooking.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,16 +12,17 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DigitalBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20251225012453_SyncDefaultValues")]
+    partial class SyncDefaultValues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DigitalBooking.Domain.Attendance", b =>
@@ -85,10 +87,6 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("classroom_id");
 
-                    b.Property<long?>("GroupId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("group_id");
-
                     b.Property<long?>("LessonId")
                         .HasColumnType("bigint")
                         .HasColumnName("lesson_id");
@@ -118,21 +116,15 @@ namespace DigitalBooking.Infrastructure.Migrations
 
                     b.HasIndex("CancelledById");
 
+                    b.HasIndex("ClassroomId");
+
                     b.HasIndex("LessonId");
+
+                    b.HasIndex("PersonBookedId");
 
                     b.HasIndex("ResponsiblePersonId");
 
-                    b.HasIndex("ClassroomId", "BookingEnd")
-                        .HasDatabaseName("ix_booked_events_active_classroom_end")
-                        .HasFilter("cancelled_at IS NULL");
-
-                    b.HasIndex("GroupId", "BookingEnd")
-                        .HasDatabaseName("ix_booked_events_group_end");
-
-                    b.HasIndex("PersonBookedId", "BookingEnd")
-                        .HasDatabaseName("ix_booked_events_active_person_booked_end");
-
-                    b.ToTable("booked_events", (string)null);
+                    b.ToTable("bookings", (string)null);
                 });
 
             modelBuilder.Entity("DigitalBooking.Domain.BookingAsset", b =>
@@ -520,12 +512,6 @@ namespace DigitalBooking.Infrastructure.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("Title")
-                        .HasDatabaseName("ix_library_space_title_trgm");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Title"), "gin");
-                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Title"), new[] { "gin_trgm_ops" });
-
                     b.ToTable("library_space", (string)null);
                 });
 
@@ -622,8 +608,6 @@ namespace DigitalBooking.Infrastructure.Migrations
 
                     b.HasIndex("Tags")
                         .HasDatabaseName("ix_posts_tags_gin");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Tags"), "gin");
 
                     b.HasIndex("DisciplineId", "CreatedAt")
                         .HasDatabaseName("ix_posts_discipline_created_at");
@@ -815,11 +799,6 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DigitalBooking.Domain.Group", "Group")
-                        .WithMany("Bookings")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("DigitalBooking.Domain.Lesson", "Lesson")
                         .WithMany("Bookings")
                         .HasForeignKey("LessonId")
@@ -842,8 +821,6 @@ namespace DigitalBooking.Infrastructure.Migrations
                     b.Navigation("CancelledBy");
 
                     b.Navigation("Classroom");
-
-                    b.Navigation("Group");
 
                     b.Navigation("Lesson");
 
@@ -1083,8 +1060,6 @@ namespace DigitalBooking.Infrastructure.Migrations
 
             modelBuilder.Entity("DigitalBooking.Domain.Group", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("Lessons");
 
                     b.Navigation("StudentProfiles");

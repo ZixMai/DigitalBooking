@@ -52,10 +52,8 @@ public class RegisterEndpoint(
         var passwordHash = hashService.HashPassword(req.Password);
         var user = new User
         {
-            Id = Guid.NewGuid(),
-            Username = req.Email,
-            PasswordHash = passwordHash,
-            CreatedAt = DateTime.UtcNow
+            UserEmail = req.Email,
+            PasswordHash = passwordHash
         };
         await userRepository.CreateUserAsync(user, ct);
         

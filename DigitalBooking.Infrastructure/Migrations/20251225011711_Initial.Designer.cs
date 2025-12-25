@@ -3,6 +3,7 @@ using System;
 using DigitalBooking.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,16 +12,17 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DigitalBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContext))]
-    partial class DbContextModelSnapshot : ModelSnapshot
+    [Migration("20251225011711_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "10.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DigitalBooking.Domain.Attendance", b =>
@@ -34,16 +36,12 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("user_id");
 
                     b.Property<bool>("Appeared")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false)
                         .HasColumnName("appeared");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.HasKey("BookingId", "UserId");
 
@@ -85,10 +83,6 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("classroom_id");
 
-                    b.Property<long?>("GroupId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("group_id");
-
                     b.Property<long?>("LessonId")
                         .HasColumnType("bigint")
                         .HasColumnName("lesson_id");
@@ -99,10 +93,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("meeting_link");
 
                     b.Property<DateTime>("ModifiedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("modified_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("modified_at");
 
                     b.Property<Guid>("PersonBookedId")
                         .HasColumnType("uuid")
@@ -118,21 +110,15 @@ namespace DigitalBooking.Infrastructure.Migrations
 
                     b.HasIndex("CancelledById");
 
+                    b.HasIndex("ClassroomId");
+
                     b.HasIndex("LessonId");
+
+                    b.HasIndex("PersonBookedId");
 
                     b.HasIndex("ResponsiblePersonId");
 
-                    b.HasIndex("ClassroomId", "BookingEnd")
-                        .HasDatabaseName("ix_booked_events_active_classroom_end")
-                        .HasFilter("cancelled_at IS NULL");
-
-                    b.HasIndex("GroupId", "BookingEnd")
-                        .HasDatabaseName("ix_booked_events_group_end");
-
-                    b.HasIndex("PersonBookedId", "BookingEnd")
-                        .HasDatabaseName("ix_booked_events_active_person_booked_end");
-
-                    b.ToTable("booked_events", (string)null);
+                    b.ToTable("bookings", (string)null);
                 });
 
             modelBuilder.Entity("DigitalBooking.Domain.BookingAsset", b =>
@@ -145,10 +131,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<Guid?>("OwnerId")
                         .HasColumnType("uuid")
@@ -184,9 +168,7 @@ namespace DigitalBooking.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<short>("BookingSlotsLimit")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint")
-                        .HasDefaultValue((short)1)
                         .HasColumnName("booking_slots_limit");
 
                     b.Property<short?>("Capacity")
@@ -198,10 +180,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("classroom_type_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<long>("OwnerDepartmentId")
                         .HasColumnType("bigint")
@@ -232,10 +212,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("TypeName")
                         .IsRequired()
@@ -258,10 +236,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid")
@@ -334,10 +310,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -360,10 +334,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<short>("EnrollmentYear")
                         .HasColumnType("smallint")
@@ -412,10 +384,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<long>("DisciplineId")
                         .HasColumnType("bigint")
@@ -456,10 +426,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasDefaultValueSql("uuidv7()");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Files")
                         .IsRequired()
@@ -511,20 +479,12 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("title");
 
                     b.Property<DateTime>("UploadedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("uploaded_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("uploaded_at");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
-
-                    b.HasIndex("Title")
-                        .HasDatabaseName("ix_library_space_title_trgm");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Title"), "gin");
-                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("Title"), new[] { "gin_trgm_ops" });
 
                     b.ToTable("library_space", (string)null);
                 });
@@ -543,19 +503,15 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("booking_id");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("Message")
                         .HasColumnType("text")
                         .HasColumnName("message");
 
                     b.Property<bool>("Read")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(false)
                         .HasColumnName("read");
 
                     b.Property<Guid?>("ReceiverId")
@@ -586,10 +542,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("content");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uuid")
@@ -623,8 +577,6 @@ namespace DigitalBooking.Infrastructure.Migrations
                     b.HasIndex("Tags")
                         .HasDatabaseName("ix_posts_tags_gin");
 
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Tags"), "gin");
-
                     b.HasIndex("DisciplineId", "CreatedAt")
                         .HasDatabaseName("ix_posts_discipline_created_at");
 
@@ -646,10 +598,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("contact_link");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<long>("GroupId")
                         .HasColumnType("bigint")
@@ -683,10 +633,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasColumnName("academic_degree");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<string>("ScienceCloudLink")
                         .HasMaxLength(1000)
@@ -714,10 +662,8 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasDefaultValueSql("uuidv7()");
 
                     b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp without time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("now()");
+                        .HasColumnName("created_at");
 
                     b.Property<long>("DepartmentId")
                         .HasColumnType("bigint")
@@ -815,11 +761,6 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DigitalBooking.Domain.Group", "Group")
-                        .WithMany("Bookings")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("DigitalBooking.Domain.Lesson", "Lesson")
                         .WithMany("Bookings")
                         .HasForeignKey("LessonId")
@@ -842,8 +783,6 @@ namespace DigitalBooking.Infrastructure.Migrations
                     b.Navigation("CancelledBy");
 
                     b.Navigation("Classroom");
-
-                    b.Navigation("Group");
 
                     b.Navigation("Lesson");
 
@@ -1083,8 +1022,6 @@ namespace DigitalBooking.Infrastructure.Migrations
 
             modelBuilder.Entity("DigitalBooking.Domain.Group", b =>
                 {
-                    b.Navigation("Bookings");
-
                     b.Navigation("Lessons");
 
                     b.Navigation("StudentProfiles");
