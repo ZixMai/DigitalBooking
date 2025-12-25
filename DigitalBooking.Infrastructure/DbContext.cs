@@ -11,7 +11,7 @@ public class DbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<ClassroomType> ClassroomTypes { get; set; } = null!;
     public DbSet<Classroom> Classrooms { get; set; } = null!;
     public DbSet<BookingAsset> BookingAssets { get; set; } = null!;
-    public DbSet<Booking> Bookings { get; set; } = null!;
+    public DbSet<Booking> BookingEvents { get; set; } = null!;
     public DbSet<Discipline> Disciplines { get; set; } = null!;
     public DbSet<Lesson> Lessons { get; set; } = null!;
     public DbSet<Group> Groups { get; set; } = null!;

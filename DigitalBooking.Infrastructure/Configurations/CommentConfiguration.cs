@@ -8,7 +8,10 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        builder.ToTable("comments");
+        builder.ToTable("comments", tb =>
+        {
+            tb.HasTrigger("trg_comments_notify_reply");
+        });
 
         builder.HasKey(c => c.Id);
 

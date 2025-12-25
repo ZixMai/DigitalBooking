@@ -8,7 +8,11 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 {
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
-        builder.ToTable("booked_events");
+        builder.ToTable("booked_events", tb =>
+        {
+            tb.HasTrigger("trg_booked_events_set_group_from_lesson");
+            tb.HasTrigger("trg_booked_events_notify_cancel");
+        });
 
         builder.HasKey(b => b.Id);
 
