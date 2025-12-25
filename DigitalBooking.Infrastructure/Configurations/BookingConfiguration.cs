@@ -8,7 +8,7 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
 {
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
-        builder.ToTable("bookings");
+        builder.ToTable("booked_events");
 
         builder.HasKey(b => b.Id);
 
@@ -36,6 +36,9 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.LessonId)
             .HasColumnName("lesson_id");
 
+        builder.Property(b => b.GroupId)
+            .HasColumnName("group_id");
+
         builder.Property(b => b.MeetingLink)
             .HasColumnName("meeting_link")
             .HasMaxLength(1000);
@@ -59,6 +62,16 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.CancelledById)
             .HasColumnName("cancelled_by_id");
 
+        builder.HasIndex(b => new { b.GroupId, b.BookingEnd })
+            .HasDatabaseName("ix_booked_events_group_end");
+
+        builder.HasIndex(b => new { b.ClassroomId, b.BookingEnd })
+            .HasDatabaseName("ix_booked_events_active_classroom_end")
+            .HasFilter("cancelled_at IS NULL");
+
+        builder.HasIndex(b => new { b.PersonBookedId, b.BookingEnd })
+            .HasDatabaseName("ix_booked_events_active_person_booked_end");
+
         builder.HasOne(b => b.Classroom)
             .WithMany(c => c.Bookings)
             .HasForeignKey(b => b.ClassroomId)
@@ -77,6 +90,11 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.HasOne(b => b.Lesson)
             .WithMany(l => l.Bookings)
             .HasForeignKey(b => b.LessonId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(b => b.Group)
+            .WithMany(g => g.Bookings)
+            .HasForeignKey(b => b.GroupId)
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(b => b.BookingAsset)

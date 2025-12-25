@@ -1,6 +1,7 @@
 using DigitalBooking.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DigitalBooking.Infrastructure.Configurations;
 
@@ -44,5 +45,10 @@ public class LibrarySpaceConfiguration : IEntityTypeConfiguration<LibrarySpace>
             .WithMany(u => u.LibrarySpaces)
             .HasForeignKey(l => l.CreatorId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(l => l.Title)
+            .HasDatabaseName("ix_library_space_title_trgm")
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
     }
 }

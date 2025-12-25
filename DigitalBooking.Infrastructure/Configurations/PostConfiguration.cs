@@ -57,7 +57,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(p => p.Tags)
-            .HasDatabaseName("ix_posts_tags_gin");
+            .HasDatabaseName("ix_posts_tags_gin")
+            .HasMethod("gin");
 
         builder.HasIndex(p => new { p.DisciplineId, p.CreatedAt })
             .HasDatabaseName("ix_posts_discipline_created_at");

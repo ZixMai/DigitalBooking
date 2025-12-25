@@ -33,6 +33,7 @@ public class DbContext : Microsoft.EntityFrameworkCore.DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("pg_trgm");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DbContext).Assembly);
     }
 }

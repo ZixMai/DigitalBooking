@@ -8,6 +8,7 @@ public class Booking
     public Guid ResponsiblePersonId { get; set; }
     public DateTime ModifiedAt { get; set; }
     public long? LessonId { get; set; }
+    public long? GroupId { get; set; }
     public string? MeetingLink { get; set; }
     public long? BookingAssetId { get; set; }
     public DateTime BookingStart { get; set; }
@@ -19,6 +20,7 @@ public class Booking
     public User PersonBooked { get; set; } = null!;
     public User ResponsiblePerson { get; set; } = null!;
     public Lesson? Lesson { get; set; }
+    public Group? Group { get; set; }
     public BookingAsset? BookingAsset { get; set; }
     public User? CancelledBy { get; set; }
 

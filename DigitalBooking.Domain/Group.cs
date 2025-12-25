@@ -16,4 +16,5 @@ public class Group
 
     public List<Lesson> Lessons { get; set; } = [];
     public List<StudentProfile> StudentProfiles { get; set; } = [];
+    public List<Booking> Bookings { get; set; } = [];
 }
