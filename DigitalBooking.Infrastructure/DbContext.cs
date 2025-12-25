@@ -23,6 +23,9 @@ public class DbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Comment> Comments { get; set; } = null!;
     public DbSet<LibrarySpace> LibrarySpaces { get; set; } = null!;
     public DbSet<LessonMaterial> LessonMaterials { get; set; } = null!;
+
+    // Keyless view
+    public DbSet<StudentProfileDetailsView> StudentProfileDetailsView { get; set; } = null!;
         
     public DbContext(DbContextOptions<DbContext> options)
         : base(options)
