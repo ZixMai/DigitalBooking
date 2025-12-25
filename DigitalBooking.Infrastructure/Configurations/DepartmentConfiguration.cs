@@ -22,5 +22,12 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 
         builder.HasIndex(d => d.Title)
             .IsUnique();
+
+        // Seed default department with Id = 1 and Title = "-"
+        builder.HasData(new Department
+        {
+            Id = 1,
+            Title = "-"
+        });
     }
 }
