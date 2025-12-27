@@ -65,6 +65,7 @@ public sealed class CreateTeacherEndpoint(
         user.Fullname = req.Fullname;
         user.DepartmentId = req.DepartmentId;
         user.UpdatedAt = DateTimeConverter.RemoveTimeZone(DateTime.UtcNow);
+        user.Role = nameof(Role.TEACHER);
         var profile = new TeacherProfile
         {
             UserId = userId,

@@ -13,7 +13,7 @@ using FastEndpoints;
 public class RefreshEndpoint(
     IUserRepository userRepository,
     JwtService jwtService
-) : Endpoint<RefreshRequest, TokenResponse>
+) : EndpointWithoutRequest<TokenResponse>
 {
     public override void Configure()
     {
@@ -27,7 +27,7 @@ public class RefreshEndpoint(
             .Produces<TokenResponse>());
     }
 
-    public override async Task HandleAsync(RefreshRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
         var user = await userRepository.GetUserAsync(User.GetIdAndRole().Item1, ct);
         if (user == null || user.PasswordHash == string.Empty || user.IsDeleted)

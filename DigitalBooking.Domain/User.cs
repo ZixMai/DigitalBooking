@@ -16,7 +16,7 @@ public class User
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
-    public Role Role { get; set; } = Role.STUDENT;
+    public string Role { get; set; } = nameof(Domain.Role.STUDENT);
     public bool IsDeleted { get; set; } = false;
 
     public List<BookingAsset> BookingAssets { get; set; } = [];

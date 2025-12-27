@@ -38,7 +38,7 @@ public sealed class CreateLessonEndpoint(
         var user = await userRepository.GetUserAsync(req.TeacherId, ct);
         if (user is null) { AddError("Преподаватель не найден"); }
 
-        if (user!.Role == Role.STUDENT)
+        if (user!.Role == nameof(Role.STUDENT))
         {
             await Send.ForbiddenAsync(ct);
             return;

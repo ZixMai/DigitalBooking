@@ -65,6 +65,7 @@ public sealed class CreateStudentEndpoint(
         user.Fullname = req.Fullname;
         user.DepartmentId = req.DepartmentId;
         user.UpdatedAt = DateTimeConverter.RemoveTimeZone(DateTime.UtcNow);
+        user.Role = nameof(Role.STUDENT);
         var profile = new StudentProfile
         {
             UserId = userId,
