@@ -16,7 +16,7 @@ public class User
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
-    public string Role { get; set; } = "STUDENT";
+    public string Role { get; set; } = nameof(Domain.Role.STUDENT);
     public bool IsDeleted { get; set; } = false;
 
     public List<BookingAsset> BookingAssets { get; set; } = [];
@@ -36,5 +36,5 @@ public class User
     public List<Comment> CommentsCreated { get; set; } = [];
     public List<Comment> CommentsRepliedToUser { get; set; } = [];
 
-    public List<LibrarySpace> LibrarySpaces { get; set; } = [];
+    public List<LibraryPublication> LibrarySpaces { get; set; } = [];
 }

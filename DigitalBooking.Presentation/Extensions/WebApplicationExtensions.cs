@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text.Json;
 using DigitalBooking.Presentation.Middlewares;
 using FastEndpoints;
@@ -28,6 +29,7 @@ public static class WebApplicationExtensions
 
         app.UseFastEndpoints(c =>
         {
+            c.Security.RoleClaimType = ClaimTypes.Role;
             c.Endpoints.RoutePrefix = "api/v1";
             c.Serializer.Options.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
 
@@ -36,6 +38,12 @@ public static class WebApplicationExtensions
                 ep.Description(b => b
                     .Produces<ErrorResponse>(400, "application/problem+json")
                     .Produces<ProblemDetails>(500));
+                
+                var isAnonymous = ep.AnonymousVerbs is { Length: > 0 };
+                var isRefreshEndpoint = ep.PreBuiltUserPolicies?.Contains(ApiPolicies.IsTokenRefresh) == true;
+                if (isAnonymous || isRefreshEndpoint) { return; }
+                
+                ep.Policies(ApiPolicies.IsTokenAccess);
             };
         });
 

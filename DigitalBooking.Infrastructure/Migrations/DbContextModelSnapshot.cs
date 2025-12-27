@@ -132,7 +132,12 @@ namespace DigitalBooking.Infrastructure.Migrations
                     b.HasIndex("PersonBookedId", "BookingEnd")
                         .HasDatabaseName("ix_booked_events_active_person_booked_end");
 
-                    b.ToTable("booked_events", (string)null);
+                    b.ToTable("booked_events", null, t =>
+                        {
+                            t.HasTrigger("trg_booked_events_notify_cancel");
+
+                            t.HasTrigger("trg_booked_events_set_group_from_lesson");
+                        });
                 });
 
             modelBuilder.Entity("DigitalBooking.Domain.BookingAsset", b =>
@@ -298,7 +303,10 @@ namespace DigitalBooking.Infrastructure.Migrations
 
                     b.HasIndex("ReplyToUserId");
 
-                    b.ToTable("comments", (string)null);
+                    b.ToTable("comments", null, t =>
+                        {
+                            t.HasTrigger("trg_comments_notify_reply");
+                        });
                 });
 
             modelBuilder.Entity("DigitalBooking.Domain.Department", b =>
@@ -322,6 +330,13 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("departments", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Title = "-"
+                        });
                 });
 
             modelBuilder.Entity("DigitalBooking.Domain.Discipline", b =>
@@ -484,7 +499,7 @@ namespace DigitalBooking.Infrastructure.Migrations
                     b.ToTable("lesson_materials", (string)null);
                 });
 
-            modelBuilder.Entity("DigitalBooking.Domain.LibrarySpace", b =>
+            modelBuilder.Entity("DigitalBooking.Domain.LibraryPublication", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -669,6 +684,46 @@ namespace DigitalBooking.Infrastructure.Migrations
                     b.ToTable("student_profile", (string)null);
                 });
 
+            modelBuilder.Entity("DigitalBooking.Domain.StudentProfileDetailsView", b =>
+                {
+                    b.Property<string>("ContactLink")
+                        .HasColumnType("text")
+                        .HasColumnName("contact_link");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("DepartmentTitle")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("department_title");
+
+                    b.Property<string>("Fullname")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("fullname");
+
+                    b.Property<string>("GroupName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("group_name");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_email");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("username");
+
+                    b.ToTable((string)null);
+
+                    b.ToView("student_profile_details_view", (string)null);
+                });
+
             modelBuilder.Entity("DigitalBooking.Domain.TeacherProfile", b =>
                 {
                     b.Property<long>("Id")
@@ -720,7 +775,9 @@ namespace DigitalBooking.Infrastructure.Migrations
                         .HasDefaultValueSql("now()");
 
                     b.Property<long>("DepartmentId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
+                        .HasDefaultValue(1L)
                         .HasColumnName("department_id");
 
                     b.Property<string>("Fullname")
@@ -953,7 +1010,7 @@ namespace DigitalBooking.Infrastructure.Migrations
                     b.Navigation("Lesson");
                 });
 
-            modelBuilder.Entity("DigitalBooking.Domain.LibrarySpace", b =>
+            modelBuilder.Entity("DigitalBooking.Domain.LibraryPublication", b =>
                 {
                     b.HasOne("DigitalBooking.Domain.User", "Creator")
                         .WithMany("LibrarySpaces")

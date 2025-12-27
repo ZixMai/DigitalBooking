@@ -28,7 +28,7 @@ public class RegisterEndpoint(
             .Produces<TokenResponse>());
     }
     
-    internal sealed class Validator : AbstractValidator<RegisterRequest>
+    internal sealed class Validator : Validator<RegisterRequest>
     {
         public Validator()
         {
@@ -49,12 +49,23 @@ public class RegisterEndpoint(
 
     public override async Task HandleAsync(RegisterRequest req, CancellationToken ct)
     {
-        var passwordHash = hashService.HashPassword(req.Password);
-        var user = new User
+        var user = await userRepository.GetUserByEmailAsync(req.Email, ct);
+        if (user is not null && user.PasswordHash != string.Empty)
         {
-            UserEmail = req.Email,
-            PasswordHash = passwordHash
-        };
+            AddError("User with the same email already exists.");
+            await Send.UnauthorizedAsync(ct);
+            return;
+        }
+
+        if (user?.IsDeleted ?? false)
+        {
+            AddError("User is deleted.");
+            await Send.ForbiddenAsync(ct);
+            return;
+        }
+        user ??= new User { UserEmail = req.Email };
+        var passwordHash = hashService.HashPassword(req.Password);
+        user.PasswordHash = passwordHash;
         await userRepository.CreateUserAsync(user, ct);
         
         await Send.OkAsync(jwtService.GenerateTokenPair(user), ct);

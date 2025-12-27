@@ -18,6 +18,15 @@ public static class InfrastructureInjection
         });
         
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IClassroomRepository, ClassroomRepository>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<IDisciplineRepository, DisciplineRepository>();
+        services.AddScoped<ILibraryRepository, LibraryRepository>();
+        services.AddScoped<ILessonsRepository, LessonsRepository>();
+        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
         
         return services;
     }

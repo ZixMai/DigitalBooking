@@ -18,8 +18,9 @@ public class JwtService
             {
                 o.ExpireAt = accessTokenExpiry;
                 o.User["UserId"] = user.Id.ToString();
-                o.User["Username"] = user.Username;
-                o.User.Roles.Add("User");
+                o.User["Email"] = user.UserEmail;
+                o.User.Roles.Add(user.Role.ToString());
+                o.User["TokenType"] = "access";
             });
 
         var refreshToken = JwtBearer.CreateToken(

@@ -21,7 +21,7 @@ public class DbContext : Microsoft.EntityFrameworkCore.DbContext
     public DbSet<Notification> Notifications { get; set; } = null!;
     public DbSet<Post> Posts { get; set; } = null!;
     public DbSet<Comment> Comments { get; set; } = null!;
-    public DbSet<LibrarySpace> LibrarySpaces { get; set; } = null!;
+    public DbSet<LibraryPublication> LibrarySpaces { get; set; } = null!;
     public DbSet<LessonMaterial> LessonMaterials { get; set; } = null!;
 
     // Keyless view

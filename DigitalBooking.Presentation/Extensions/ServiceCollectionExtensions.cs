@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DigitalBooking.Application;
 using DigitalBooking.Application.Services;
 using DigitalBooking.Infrastructure;
@@ -24,26 +25,26 @@ public static class ServiceCollectionExtensions
 
         services.AddCors();
 
-        services
-            .AddAuthenticationJwtBearer(
-                s => s.SigningKey = configuration["Jwt:SigningKey"]!, 
+        services.AddAuthenticationJwtBearer(
+                s => s.SigningKey = configuration["Jwt:SigningKey"]!,
                 bearer =>
                 {
-                    bearer.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = configuration["Jwt:Issuer"]!,
+                    bearer.TokenValidationParameters.ValidateIssuer = true;
+                    bearer.TokenValidationParameters.ValidIssuer = configuration["Jwt:Issuer"]!;
 
-                        ValidateAudience = true,
-                        ValidAudience = configuration["Jwt:Audience"]!,
+                    bearer.TokenValidationParameters.ValidateAudience = true;
+                    bearer.TokenValidationParameters.ValidAudience = configuration["Jwt:Audience"]!;
 
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true
-                    };
+                    bearer.TokenValidationParameters.ValidateLifetime = true;
+                    bearer.TokenValidationParameters.ValidateIssuerSigningKey = true;
+
+                    bearer.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
                 })
             .AddAuthorizationBuilder()
             .AddPolicy(ApiPolicies.IsTokenRefresh, policy =>
-                policy.RequireClaim("TokenType", "refresh"));
+                policy.RequireClaim("TokenType", "refresh"))
+            .AddPolicy(ApiPolicies.IsTokenAccess, policy =>
+                policy.RequireClaim("TokenType", "access"));
 
         services.AddFastEndpoints();
 

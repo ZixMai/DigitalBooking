@@ -1,6 +1,7 @@
 using DigitalBooking.Application.Abstractions;
 using DigitalBooking.Application.Services;
 using DigitalBooking.Domain;
+using DigitalBooking.Domain.Utils;
 using DigitalBooking.Presentation.Groups;
 using FastEndpoints.Security;
 using Microsoft.AspNetCore.Identity.Data;
@@ -12,13 +13,12 @@ using FastEndpoints;
 public class RefreshEndpoint(
     IUserRepository userRepository,
     JwtService jwtService
-) : Endpoint<RefreshRequest, TokenResponse>
+) : EndpointWithoutRequest<TokenResponse>
 {
     public override void Configure()
     {
         Post("/refresh");
         Group<AuthGroup>();
-        AllowAnonymous();
         Policies(ApiPolicies.IsTokenRefresh);
         
         Description(b => b
@@ -27,10 +27,10 @@ public class RefreshEndpoint(
             .Produces<TokenResponse>());
     }
 
-    public override async Task HandleAsync(RefreshRequest req, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        var user = await userRepository.GetUserAsync(Guid.Parse(User.FindFirst("UserId")!.Value), ct);
-        if (user == null)
+        var user = await userRepository.GetUserAsync(User.GetIdAndRole().Item1, ct);
+        if (user == null || user.PasswordHash == string.Empty || user.IsDeleted)
         {
             await Send.ForbiddenAsync(ct);
             return;

@@ -34,6 +34,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.DepartmentId)
             .HasColumnName("department_id")
+            .HasDefaultValue(1)
             .IsRequired();
 
         builder.Property(u => u.PasswordHash)
