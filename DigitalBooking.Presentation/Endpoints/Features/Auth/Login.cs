@@ -27,7 +27,7 @@ public class LoginEndpoint(
             .Produces<TokenResponse>());
     }
     
-    internal sealed class Validator : AbstractValidator<LoginRequest>
+    internal sealed class Validator : Validator<LoginRequest>
     {
         public Validator()
         {
@@ -49,7 +49,7 @@ public class LoginEndpoint(
     public override async Task HandleAsync(LoginRequest req, CancellationToken ct)
     {
         var user = await userRepository.GetUserByEmailAsync(req.Email, ct);
-        if (user == null)
+        if (user == null || user.PasswordHash == string.Empty || user.IsDeleted)
         {
             await Send.NotFoundAsync(ct);
             return;

@@ -21,4 +21,16 @@ public class UserRepository(DbContext dbContext) : IUserRepository
     {
         return await dbContext.Users.FirstOrDefaultAsync(user => user.Id == userId, cancellationToken: cancellationToken);
     }
+    
+    public async Task<Group?> GetGroupAsync(long id, CancellationToken cancellationToken)
+    {
+        return await dbContext.Groups.FirstOrDefaultAsync(group => group.Id == id, cancellationToken: cancellationToken);
+    }
+
+    public async Task SoftDeleteUserAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        await dbContext.Users
+            .Where(x => x.Id == userId)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.IsDeleted, true), cancellationToken);
+    }
 }

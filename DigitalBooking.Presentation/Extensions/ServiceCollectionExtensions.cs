@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using DigitalBooking.Application;
 using DigitalBooking.Application.Services;
 using DigitalBooking.Infrastructure;
@@ -40,10 +41,13 @@ public static class ServiceCollectionExtensions
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true
                     };
+                    bearer.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
                 })
             .AddAuthorizationBuilder()
             .AddPolicy(ApiPolicies.IsTokenRefresh, policy =>
-                policy.RequireClaim("TokenType", "refresh"));
+                policy.RequireClaim("TokenType", "refresh"))
+            .AddPolicy(ApiPolicies.IsTokenAccess, policy =>
+                policy.RequireClaim("TokenType", "access"));
 
         services.AddFastEndpoints();
 

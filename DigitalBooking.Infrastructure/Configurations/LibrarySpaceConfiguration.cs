@@ -5,9 +5,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DigitalBooking.Infrastructure.Configurations;
 
-public class LibrarySpaceConfiguration : IEntityTypeConfiguration<LibrarySpace>
+public class LibrarySpaceConfiguration : IEntityTypeConfiguration<LibraryPublication>
 {
-    public void Configure(EntityTypeBuilder<LibrarySpace> builder)
+    public void Configure(EntityTypeBuilder<LibraryPublication> builder)
     {
         builder.ToTable("library_space");
 

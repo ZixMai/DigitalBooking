@@ -1,6 +1,6 @@
 namespace DigitalBooking.Domain;
 
-public class LibrarySpace
+public class LibraryPublication
 {
     public Guid Id { get; private set; }
     public string Title { get; set; } = string.Empty;
