@@ -8,7 +8,10 @@ public class ClassroomRepository(DbContext dbContext) : IClassroomRepository
 {
     public async Task<List<Classroom>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await dbContext.Classrooms.ToListAsync(cancellationToken);
+        return await dbContext.Classrooms
+            .Include(classroom => classroom.OwnerDepartment)
+            .Include(classroom => classroom.ClassroomType)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Classroom?> GetAsync(long id, CancellationToken cancellationToken)

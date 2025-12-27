@@ -8,7 +8,21 @@ public class BookingRepository(DbContext dbContext) : IBookingRepository
 {
     public async Task<List<Booking>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await dbContext.BookingEvents.ToListAsync(cancellationToken);
+        return await dbContext.BookingEvents
+            .Include(e => e.Classroom)
+                .ThenInclude(classroom => classroom.ClassroomType)
+            .Include(e => e.Classroom)
+                .ThenInclude(classroom => classroom.OwnerDepartment)
+            .Include(e => e.PersonBooked)
+            .Include(e => e.ResponsiblePerson)
+            .Include(e => e.Lesson)
+                .ThenInclude(lesson => lesson == null ? null : lesson.Discipline)
+            .Include(e => e.Lesson)
+                .ThenInclude(lesson => lesson == null ? null : lesson.Teacher)
+            .Include(e => e.Lesson)
+                .ThenInclude(lesson => lesson == null ? null : lesson.Group)
+            .Include(e => e.CancelledBy)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Booking?> GetAsync(long id, CancellationToken cancellationToken)
