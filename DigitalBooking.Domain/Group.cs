@@ -22,11 +22,24 @@ public class Group
     {
         /*
          IN RAW SQL
-            groups.prefix || '-' ||
-            (extract(YEAR FROM age(now(), (groups.enrollment_year::text || '-09-01 00:00:00')::timestamp)) + 1)::text ||
-            lpad(groups.number::text, 2, '0') ||
-            group_type || '-' ||
-            substring(groups.enrollment_year::text FROM 3 FOR 2)
+            CREATE OR REPLACE FUNCTION get_group_display_name(group_id bigint)
+           RETURNS text AS $$
+           DECLARE
+               result text;
+           BEGIN
+               SELECT
+                   g.prefix || '-' ||
+                   (EXTRACT(YEAR FROM age(now(), (g.enrollment_year::text || '-09-01 00:00:00')::timestamp)) + 1)::text ||
+                   LPAD(g.number::text, 2, '0') ||
+                   g.group_type || '-' ||
+                   SUBSTRING(g.enrollment_year::text FROM 3 FOR 2)
+               INTO result
+               FROM groups g
+               WHERE g.id = group_id;
+           
+               RETURN result;
+           END;
+           $$ LANGUAGE plpgsql STABLE;
         */
         var current = DateTime.UtcNow;
         var enrollmentDate = new DateTime(EnrollmentYear, 9, 1, 0, 0, 0, DateTimeKind.Utc);

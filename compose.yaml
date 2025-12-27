@@ -4,6 +4,8 @@
     build:
       context: .
       dockerfile: DigitalBooking.Presentation/Dockerfile
+    ports:
+      - "8080:5223"
   postgres-db:
     container_name: db-postgres
     image: postgres:18-alpine
