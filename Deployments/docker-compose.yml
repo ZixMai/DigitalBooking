@@ -1,0 +1,16 @@
+﻿version: '3.8'
+
+include:
+  - './networks/docker-compose.networks.yml'
+  - './postgres/docker-compose.postgres.yml'
+  - './postgres/docker-compose.migrator.yml'
+  - './s3/docker-compose.s3.yml'
+
+services:
+  digitalbooking.presentation:
+    image: digitalbooking.presentation
+    build:
+      context: .
+      dockerfile: ../DigitalBooking.Presentation/Dockerfile
+    ports:
+      - "8080:5223"

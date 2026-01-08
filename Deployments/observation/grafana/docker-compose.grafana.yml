@@ -1,0 +1,45 @@
+﻿version: '3.8'
+
+services:
+  grafana:
+    container_name: digitalbooking-grafana
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA__ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA__ADMIN_PASSWORD}
+      GF_PATHS_CONFIG: /etc/grafana/custom.ini
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          orgId: 1
+          url: http://prometheus-prod:9090
+          basicAuth: false
+          isDefault: true
+          version: 1
+          editable: true
+        EOF
+        /run.sh
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-config.ini:/etc/grafana/custom.ini
+      - digitalbooking-grafana-data:/var/lib/grafana
+    networks:
+      - digitalbooking-network
+    depends_on:
+      - prometheus
+
+volumes:
+  digitalbooking-grafana-data:

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: digitalbooking-s3
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    environment:
+      MINIO_ROOT_USER=${S3Condiguration__User}
+      MINIO_ROOT_PASSWORD=${S3Condiguration__Password}
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      interval: 5s
+      timeout: 10s
+      retries: 120
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - digitalbooking-minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - digitalbooking-network
+
+volumes:
+  digitalbooking-minio-data:

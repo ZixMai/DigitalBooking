@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    container_name: digitalbooking-postgres
+    image: postgres:18-alpine
+    restart: unless-stopped
+    env_file:
+      - ../../.env
+    environment:
+      POSTGRES_USER: ${DbConfiguration__User}
+      POSTGRES_PASSWORD: ${DbConfiguration__Password}
+      POSTGRES_DB: ${DbConfiguration__Database}
+      PGUSER: ${DbConfiguration__User}
+      PGDATABASE: ${DbConfiguration__Database}
+    healthcheck:
+      test: /usr/bin/pg_isready
+      interval: 5s
+      timeout: 10s
+      retries: 120
+    ports:
+      - "6432:5432"
+    volumes:
+      - digitalbooking-postgres-data:/var/lib/postgresql
+
+volumes:
+  digitalbooking-postgres-data:

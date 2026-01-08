@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  tempo:
+    container_name: digitalbooking-tempo
+    restart: unless-stopped
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - digitalbooking-tempo-data:/tmp/tempo
+    ports:
+      - "3200:3200"
+      - "4317"
+    networks:
+      - digitalbooking-network
+
+volumes:
+  digitalbooking-tempo-data:

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  migrate:
+    build:
+      context: ..
+      dockerfile: Dockerfile.migrate
+    container_name: digitalbooking-migrator
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    env_file:
+      - ../../.env
+    environment:
+      ConnectionStrings__Default: "Host=${DbConfiguration__Server};Port=${DbConfiguration__Port};Database=${DbConfiguration__Database};Username=${DbConfiguration__User};Password=${DbConfiguration__Password};Pooling=${DbConfiguration__Pooling};Minimum Pool Size=${DbConfiguration__MinPoolSize};Maximum Pool Size=${DbConfiguration__MaxPoolSize};Command Timeout=${DbConfiguration__CommandTimeout}"
+    networks:
+      - digitalbooking-network
+    restart: "no"
