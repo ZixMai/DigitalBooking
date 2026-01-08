@@ -11,11 +11,13 @@
 Из директории `Deployments` выполните:
 
 ```bash
+cd Deployments
 docker compose --env-file ../example.env up -d
 ```
 
 Или prod профиль:
 
 ```bash
+cd Deployments
 docker compose --env-file ../example.env --profile prod up -d
 ```

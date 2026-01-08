@@ -3,8 +3,6 @@ services:
     image: prom/node-exporter:latest
     container_name: digitalbooking-node-exporter
     restart: unless-stopped
-    profiles:
-      - prod
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro

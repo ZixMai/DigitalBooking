@@ -3,8 +3,6 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: digitalbooking-cadvisor
     restart: unless-stopped
-    profiles:
-      - prod
     ports:
       - "8086:8080"
     volumes:
