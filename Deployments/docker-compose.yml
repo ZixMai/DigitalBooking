@@ -6,12 +6,15 @@ include:
   - './postgres/docker-compose.migrator.yml'
   - './s3/docker-compose.s3.yml'
   - './observation/docker-compose.observation.yml'
+  - './caddy/docker-compose.caddy.yml'
 
 services:
   digitalbooking.presentation:
     image: digitalbooking.presentation
     container_name: digitalbooking-app
     restart: unless-stopped
+    profiles:
+      - prod
     env_file:
       - ../example.env
     build:

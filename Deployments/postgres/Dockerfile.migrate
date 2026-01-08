@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+﻿FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 RUN dotnet tool install --global dotnet-ef --version 10.0.*
@@ -10,13 +10,9 @@ COPY DigitalBooking.Presentation/DigitalBooking.Presentation.csproj ./DigitalBoo
 COPY DigitalBooking.Application/DigitalBooking.Application.csproj ./DigitalBooking.Application/
 COPY DigitalBooking.Domain/DigitalBooking.Domain.csproj ./DigitalBooking.Domain/
 
-RUN dotnet restore DigitalBooking.sln
+RUN dotnet restore DigitalBooking.sln -r linux-x64
 
-COPY DigitalBooking.Infrastructure/Migrations/ ./DigitalBooking.Infrastructure/Migrations/
-COPY DigitalBooking.Infrastructure/DbContext.cs ./DigitalBooking.Infrastructure/
-COPY DigitalBooking.Infrastructure/Configurations/ ./DigitalBooking.Infrastructure/Configurations/
-
-COPY DigitalBooking.Domain/ ./DigitalBooking.Domain/
+COPY . .
 
 RUN dotnet ef migrations bundle \
     --project DigitalBooking.Infrastructure/DigitalBooking.Infrastructure.csproj \
@@ -24,12 +20,7 @@ RUN dotnet ef migrations bundle \
     --context DigitalBooking.Infrastructure.DbContext \
     --configuration Release \
     --self-contained \
-    --runtime linux-x64 \
     --output /app/efbundle
-
-COPY DigitalBooking.Application/ ./DigitalBooking.Application/
-COPY DigitalBooking.Presentation/ ./DigitalBooking.Presentation/
-COPY DigitalBooking.Infrastructure/ ./DigitalBooking.Infrastructure/
 
 FROM mcr.microsoft.com/dotnet/runtime-deps:10.0
 WORKDIR /app
