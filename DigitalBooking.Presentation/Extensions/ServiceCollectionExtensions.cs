@@ -17,9 +17,12 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.ConfigureLogger();
+        services.ConfigureBootstrapLogger();
         services.RegisterApplication();
         services.AddTransient<RetryMiddleware>();
+        services.AddSingleton<ResourceDetector>();
+        services.ConfigureSerilog(configuration);
+        services.ConfigureOTel(configuration);
 
         services.RegisterInfrastructure(configuration);
 
