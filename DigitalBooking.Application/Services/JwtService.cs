@@ -19,7 +19,7 @@ public class JwtService
                 o.ExpireAt = accessTokenExpiry;
                 o.User["UserId"] = user.Id.ToString();
                 o.User["Email"] = user.UserEmail;
-                o.User.Roles.Add(user.Role.ToString());
+                o.User.Roles.Add(user.Role);
                 o.User["TokenType"] = "access";
             });
 
