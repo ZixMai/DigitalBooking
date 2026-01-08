@@ -9,14 +9,18 @@ receivers:
 processors:
   batch:
     timeout: 10s
+    send_batch_size: 1000
   memory_limiter:
     limit_mib: 512
+    check_interval: 5s
 
 exporters:
   # Логи → OpenSearch
   opensearch:
     http:
       endpoint: http://opensearch:9200
+      tls:
+        insecure: true
     logs_index: otel-logs
 
   # Traces → Tempo
@@ -31,23 +35,37 @@ exporters:
     tls:
       insecure: true
 
-  # Или expose Prometheus endpoint для scraping
+  # Prometheus endpoint для scraping (порт 8889)
   prometheus:
     endpoint: 0.0.0.0:8889
+    resource_to_telemetry_conversion:
+      enabled: true
 
+  # Debug exporter для отладки
+  debug:
+    verbosity: basic
+
+# Внутренняя телеметрия коллектора
 service:
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      level: detailed
+      address: 0.0.0.0:8888
+
   pipelines:
     logs:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [opensearch]
     
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [otlp/tempo]
     
     metrics:
       receivers: [otlp]
-      processors: [batch]
-      exporters: [prometheus]  # Prometheus будет scraping'ить порт 8889
+      processors: [memory_limiter, batch]
+      exporters: [prometheus]

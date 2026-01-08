@@ -5,6 +5,7 @@ include:
   - './postgres/docker-compose.postgres.yml'
   - './postgres/docker-compose.migrator.yml'
   - './s3/docker-compose.s3.yml'
+  - './observation/docker-compose.observation.yml'
 
 services:
   digitalbooking.presentation:

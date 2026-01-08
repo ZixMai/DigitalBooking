@@ -7,11 +7,11 @@ services:
     image: grafana/tempo:latest
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./tempo.yaml:/etc/tempo.yaml
+      - ./tempo.yaml:/etc/tempo.yaml:ro
       - digitalbooking-tempo-data:/tmp/tempo
     ports:
-      - "3200:3200"
-      - "4317"
+      - "3200:3200"   # Tempo HTTP API
+      - "4317"        # OTLP gRPC (внутренний)
     networks:
       - digitalbooking-network
 

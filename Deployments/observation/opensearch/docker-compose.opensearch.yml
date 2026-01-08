@@ -4,10 +4,12 @@ services:
   opensearch:
     container_name: digitalbooking-opensearch
     image: opensearchproject/opensearch:latest
+    restart: unless-stopped
     environment:
       - discovery.type=single-node
       - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
+      - plugins.security.disabled=true
     ports:
       - "9200:9200"
     volumes:
