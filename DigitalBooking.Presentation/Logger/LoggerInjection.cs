@@ -80,20 +80,30 @@ public static class LoggerInjection
         public void ConfigureOTel(IConfiguration configuration)
         {
             var oTelSection = configuration.GetSection(nameof(OTelConfiguration));
-            if (!oTelSection.Exists()) return;
-            var oTelConfig = oTelSection.Get<OTelConfiguration>()!;
             services.AddOpenTelemetry()
                 .ConfigureResource(builder =>
                     builder.AddDetector(sp => sp.GetRequiredService<ResourceDetector>()))
-                .WithTracing(tracing => tracing
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddOtlpExporter(options => ConfigureOtlpExporterOptions(options, oTelConfig)))
-                .WithMetrics(metrics => metrics
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddRuntimeInstrumentation()
-                    .AddOtlpExporter(options => ConfigureOtlpExporterOptions(options, oTelConfig)));
+                .WithTracing(tracing =>
+                {
+                    var builder = tracing
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddConsoleExporter();
+                    if (!oTelSection.Exists()) return;
+                    var oTelConfig = oTelSection.Get<OTelConfiguration>()!;
+                    builder.AddOtlpExporter(options => ConfigureOtlpExporterOptions(options, oTelConfig));
+                })
+                .WithMetrics(metrics =>
+                {
+                    var builder = metrics
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddRuntimeInstrumentation()
+                        .AddConsoleExporter();
+                    if (!oTelSection.Exists()) return;
+                    var oTelConfig = oTelSection.Get<OTelConfiguration>()!;
+                    builder.AddOtlpExporter(options => ConfigureOtlpExporterOptions(options, oTelConfig));
+                });
         }
     }
 }
