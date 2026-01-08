@@ -19,9 +19,11 @@ exporters:
   opensearch:
     http:
       endpoint: http://opensearch:9200
-      tls:
-        insecure: true
+      auth:
+        authenticator: basicauth/opensearch
     logs_index: otel-logs
+    dataset: logs
+    namespace: digitalbooking
 
   # Traces → Tempo
   otlp/tempo:
@@ -45,14 +47,21 @@ exporters:
   debug:
     verbosity: basic
 
+extensions:
+  # Определяем basic auth
+  basicauth/opensearch:
+    client_auth:
+      username: admin  # ← Ваш OpenSearch username
+      password: ${OPENSEARCH__PASSWORD}  # ← Из переменной окружения
+
 # Внутренняя телеметрия коллектора
 service:
+  extensions: [basicauth/opensearch]
+
   telemetry:
     logs:
       level: info
-    metrics:
-      level: detailed
-      address: 0.0.0.0:8888
+      encoding: console
 
   pipelines:
     logs:

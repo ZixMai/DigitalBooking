@@ -1,12 +1,8 @@
-version: '3.8'
-
 services:
   postgres-db:
     container_name: digitalbooking-postgres
     image: postgres:18-alpine
     restart: unless-stopped
-    env_file:
-      - ../../.env
     environment:
       POSTGRES_USER: ${DbConfiguration__User}
       POSTGRES_PASSWORD: ${DbConfiguration__Password}
@@ -22,6 +18,8 @@ services:
       - "6432:5432"
     volumes:
       - digitalbooking-postgres-data:/var/lib/postgresql
+    networks:
+      - digitalbooking-network
 
 volumes:
   digitalbooking-postgres-data:

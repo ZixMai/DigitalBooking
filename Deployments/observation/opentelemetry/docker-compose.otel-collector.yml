@@ -1,9 +1,9 @@
-version: '3.8'
-
 services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: digitalbooking-otel-collector
+    environment:
+      - OPENSEARCH__PASSWORD=${OPENSEARCH__PASSWORD}
     restart: unless-stopped
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
@@ -13,5 +13,8 @@ services:
       - "4318:4318"   # OTLP HTTP
       - "8888:8888"   # Internal metrics
       - "8889:8889"   # Prometheus metrics endpoint
+    depends_on:
+      - tempo
+      - opensearch
     networks:
       - digitalbooking-network

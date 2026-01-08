@@ -1,5 +1,3 @@
-version: '3.8'
-
 include:
   - './grafana/docker-compose.grafana.yml'
   - './opensearch/docker-compose.opensearch.yml'

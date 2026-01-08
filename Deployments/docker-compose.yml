@@ -1,4 +1,4 @@
-﻿version: '3.8'
+name: digital-booking
 
 include:
   - './networks/docker-compose.networks.yml'
@@ -10,8 +10,19 @@ include:
 services:
   digitalbooking.presentation:
     image: digitalbooking.presentation
+    container_name: digitalbooking-app
+    restart: unless-stopped
+    env_file:
+      - ../example.env
     build:
       context: .
       dockerfile: ../DigitalBooking.Presentation/Dockerfile
     ports:
       - "8080:5223"
+    networks:
+      - digitalbooking-network
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+      minio:
+        condition: service_healthy

@@ -1,14 +1,12 @@
-version: '3.8'
-
 services:
   opensearch:
+    image: opensearchproject/opensearch:2.17.0
     container_name: digitalbooking-opensearch
-    image: opensearchproject/opensearch:latest
     restart: unless-stopped
     environment:
       - discovery.type=single-node
       - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH__PASSWORD}
       - plugins.security.disabled=true
     ports:
       - "9200:9200"
@@ -16,6 +14,11 @@ services:
       - digitalbooking-opensearch-data:/usr/share/opensearch/data
     networks:
       - digitalbooking-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:9200 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   digitalbooking-opensearch-data:
