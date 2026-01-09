@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.S3;
 using DigitalBooking.Application;
 using DigitalBooking.Application.Services;
 using DigitalBooking.Infrastructure;
@@ -24,6 +26,15 @@ public static class ServiceCollectionExtensions
         services.ConfigureSerilog(configuration);
         services.ConfigureOTel(configuration);
 
+        var s3Config = configuration.GetSection(nameof(S3Configuration)).Get<S3Configuration>()!;
+        services.AddAWSService<IAmazonS3>(new AWSOptions
+        {
+            Credentials = new Amazon.Runtime.BasicAWSCredentials(
+                s3Config.User,
+                s3Config.Password
+            ),
+            DefaultClientConfig = { ServiceURL = s3Config.ServiceUrl }
+        });
         services.RegisterInfrastructure(configuration);
 
         services.AddCors();

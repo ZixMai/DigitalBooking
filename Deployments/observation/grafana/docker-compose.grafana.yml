@@ -1,0 +1,94 @@
+services:
+  grafana:
+    image: grafana/grafana:main
+    container_name: digitalbooking-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA__ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA__ADMIN_PASSWORD}
+      GF_PATHS_CONFIG: /etc/grafana/custom.ini
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_PLUGINS_PREINSTALL: grafana-opensearch-datasource
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<'EOF' > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+          # Prometheus - метрики
+          - name: Prometheus
+            type: prometheus
+            access: proxy
+            orgId: 1
+            url: http://prometheus:9090
+            basicAuth: false
+            isDefault: true
+            version: 1
+            editable: true
+            jsonData:
+              httpMethod: POST
+          # Tempo - трейсы
+          - name: Tempo
+            type: tempo
+            access: proxy
+            orgId: 1
+            url: http://tempo:3200
+            basicAuth: false
+            version: 1
+            editable: true
+            uid: tempo
+            jsonData:
+              httpMethod: GET
+              tracesToLogsV2:
+                datasourceUid: 'opensearch'
+                spanStartTimeShift: '-1h'
+                spanEndTimeShift: '1h'
+                filterByTraceID: true
+                filterBySpanID: true
+                customQuery: true
+                query: 'attributes.SpanId:"$${__span.spanId}"'
+              nodeGraph:
+                enabled: true
+              serviceMap:
+                datasourceUid: 'prometheus'
+                
+          # OpenSearch - логи
+          - name: OpenSearch
+            type: grafana-opensearch-datasource
+            access: proxy
+            orgId: 1
+            url: http://opensearch:9200
+            basicAuth: false
+            version: 1
+            editable: true
+            uid: opensearch
+            jsonData:
+              database: 'otel-logs*'
+              flavor: opensearch
+              version: '2.17.0'
+              timeField: '@timestamp'
+              logMessageField: body
+              logLevelField: severity_text
+              derivedFields:
+                - datasourceUid: tempo
+                  matcherRegex: "attributes.TraceId\":\"([^\"]+)"
+                  name: TraceID
+                  url: ''
+        EOF
+        /run.sh
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-config.ini:/etc/grafana/custom.ini:ro
+      - digitalbooking-grafana-data:/var/lib/grafana
+    networks:
+      - digitalbooking-network
+    depends_on:
+      - prometheus
+      - tempo
+      - opensearch
+
+volumes:
+  digitalbooking-grafana-data:

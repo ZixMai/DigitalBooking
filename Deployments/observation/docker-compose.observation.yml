@@ -1,0 +1,8 @@
+include:
+  - './grafana/docker-compose.grafana.yml'
+  - './opensearch/docker-compose.opensearch.yml'
+  - './opentelemetry/docker-compose.otel-collector.yml'
+  - './prometheus/docker-compose.prometheus.yml'
+  - './prometheus/docker-compose.node-exporter.yml'
+  - './prometheus/docker-compose.cadvisor.yml'
+  - './tempo/docker-compose.tempo.yml'

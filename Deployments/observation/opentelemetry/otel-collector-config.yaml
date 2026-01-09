@@ -1,0 +1,80 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 10s
+    send_batch_size: 1000
+  memory_limiter:
+    limit_mib: 512
+    check_interval: 5s
+
+exporters:
+  # Логи → OpenSearch
+  opensearch:
+    http:
+      endpoint: http://opensearch:9200
+      auth:
+        authenticator: basicauth/opensearch
+    logs_index: otel-logs
+    dataset: logs
+    namespace: digitalbooking
+
+  # Traces → Tempo
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+  # Metrics → Prometheus (через Remote Write)
+  prometheusremotewrite:
+    endpoint: http://prometheus:9090/api/v1/write
+    tls:
+      insecure: true
+
+  # Prometheus endpoint для scraping (порт 8889)
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    resource_to_telemetry_conversion:
+      enabled: true
+
+  # Debug exporter для отладки
+  debug:
+    verbosity: basic
+
+extensions:
+  # Определяем basic auth
+  basicauth/opensearch:
+    client_auth:
+      username: admin  # ← Ваш OpenSearch username
+      password: ${OPENSEARCH__PASSWORD}  # ← Из переменной окружения
+
+# Внутренняя телеметрия коллектора
+service:
+  extensions: [basicauth/opensearch]
+
+  telemetry:
+    logs:
+      level: info
+      encoding: console
+
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [opensearch]
+    
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/tempo]
+    
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [prometheus]
