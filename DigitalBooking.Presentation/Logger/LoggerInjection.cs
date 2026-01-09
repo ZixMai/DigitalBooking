@@ -87,8 +87,7 @@ public static class LoggerInjection
                 {
                     var builder = tracing
                         .AddAspNetCoreInstrumentation()
-                        .AddHttpClientInstrumentation()
-                        .AddConsoleExporter();
+                        .AddHttpClientInstrumentation();
                     if (!oTelSection.Exists()) return;
                     var oTelConfig = oTelSection.Get<OTelConfiguration>()!;
                     builder.AddOtlpExporter(options => ConfigureOtlpExporterOptions(options, oTelConfig));
@@ -98,8 +97,7 @@ public static class LoggerInjection
                     var builder = metrics
                         .AddAspNetCoreInstrumentation()
                         .AddHttpClientInstrumentation()
-                        .AddRuntimeInstrumentation()
-                        .AddConsoleExporter();
+                        .AddRuntimeInstrumentation();
                     if (!oTelSection.Exists()) return;
                     var oTelConfig = oTelSection.Get<OTelConfiguration>()!;
                     builder.AddOtlpExporter(options => ConfigureOtlpExporterOptions(options, oTelConfig));
