@@ -8,13 +8,13 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA__ADMIN_PASSWORD}
       GF_PATHS_CONFIG: /etc/grafana/custom.ini
       GF_PATHS_PROVISIONING: /etc/grafana/provisioning
-      GF_INSTALL_PLUGINS: grafana-opensearch-datasource
+      GF_PLUGINS_PREINSTALL: grafana-opensearch-datasource
     entrypoint:
       - sh
       - -euc
       - |
         mkdir -p /etc/grafana/provisioning/datasources
-        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        cat <<'EOF' > /etc/grafana/provisioning/datasources/ds.yaml
         apiVersion: 1
         datasources:
           # Prometheus - метрики
@@ -29,7 +29,6 @@ services:
             editable: true
             jsonData:
               httpMethod: POST
-              
           # Tempo - трейсы
           - name: Tempo
             type: tempo
@@ -48,8 +47,8 @@ services:
                 spanEndTimeShift: '1h'
                 filterByTraceID: true
                 filterBySpanID: true
-              tracesToMetrics:
-                datasourceUid: 'prometheus'
+                customQuery: true
+                query: 'attributes.SpanId:"$${__span.spanId}"'
               nodeGraph:
                 enabled: true
               serviceMap:
@@ -72,6 +71,11 @@ services:
               timeField: '@timestamp'
               logMessageField: body
               logLevelField: severity_text
+              derivedFields:
+                - datasourceUid: tempo
+                  matcherRegex: "attributes.TraceId\":\"([^\"]+)"
+                  name: TraceID
+                  url: ''
         EOF
         /run.sh
     ports:
